@@ -1,7 +1,7 @@
 ---
-    - name: start Kibana
+    - name: restart Kibana
       become: true
       service:
         name: kibana
-        state: started
+        state: restarted
 
