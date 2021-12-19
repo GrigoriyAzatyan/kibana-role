@@ -1,0 +1,30 @@
+---
+- name: Verify Kibana
+  hosts: all
+  gather_facts: true
+  tasks:
+
+  - name: wait until Kibana starts
+    pause:
+      minutes: 1
+
+  - name: Connect to Kibana's URL
+    uri:
+      url: http://localhost:5601/app/home#
+    register: uri_connect
+
+  - name: Verify Kibana's URL
+    assert:
+      that: uri_connect.status == 200
+      msg: URL status is {{ uri_connect.status }}
+
+
+  - name: Find Kibana's log file
+    stat:
+      path: /var/log/kibana.log
+    register: kibana_log
+
+  - name: Verify that Kibana's log exists
+    assert:
+      that: kibana_log.stat.exists == True
+      msg: log result is {{ kibana_log.stat.exists }}

@@ -1,24 +1,28 @@
 ---
-    - name: "Download Kibana's rpm"
-      get_url:
-        url: "https://artifacts.elastic.co/downloads/kibana/kibana-{{ elk_stack_version }}-x86_64.rpm"
-        dest: "/tmp/kibana-{{ elk_stack_version }}-x86_64.rpm"
-      register: download_kibana
-      until: download_kibana is succeeded
-    - name: Install Kibana
-      become: true
-      yum:
-        name: "/tmp/kibana-{{ elk_stack_version }}-x86_64.rpm"
-        state: present
-    - name: chown
-      become: true
-      file:
-        path: /usr/share/kibana
-        owner: kibana
-        group: kibana
-    - name: Configure Kibana
-      become: true
-      template:
-        src: kibana-config.yml.j2
-        dest: /etc/kibana/kibana.yml
-      notify: restart Kibana
+- include_tasks: "download_{{ ansible_facts.pkg_mgr }}.yml"
+- include_tasks: "install_{{ ansible_facts.pkg_mgr }}.yml"
+- name: chown
+  become: true
+  file:
+    path: /usr/share/kibana
+    owner: kibana
+    group: kibana
+- name: Configure Kibana in SSH session
+  become: true
+  template:
+    src: kibana-config.yml.j2
+    dest: /etc/kibana/kibana.yml
+  notify: restart Kibana
+  when: ansible_virtualization_type != 'docker'
+- name: Configure Kibana in Docker
+  become: true
+  template:
+    src: kibana-config.yml.j2
+    dest: /etc/kibana/kibana.yml
+  when: ansible_virtualization_type == 'docker'
+- name: Start Kibana in Docker
+  shell: "(/usr/share/kibana/bin/kibana --allow-root >/dev/null 2>&1 &)" 
+  async: 10
+  poll: 0
+  changed_when: false
+  when: ansible_virtualization_type == 'docker'
