@@ -16,7 +16,7 @@ pipeline {
         }
         stage('Start molecule') {
              steps {
-                  sh 'molecule test --destroy=never'
+                  sh 'molecule test'
              }
         }
     }
