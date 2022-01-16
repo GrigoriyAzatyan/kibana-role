@@ -8,10 +8,10 @@
     pause:
       minutes: 1
 
-  - name: Connect to Kibana's URL
-    uri:
-      url: http://localhost:5601/app/home#
-    register: uri_connect
+  #- name: Connect to Kibana's URL
+  #  uri:
+  #    url: http://localhost:5601/app/home#
+  #  register: uri_connect
 
   #- name: Verify Kibana's URL
   #  assert:
