@@ -12,11 +12,12 @@
     uri:
       url: http://localhost:5601/app/home#
     register: uri_connect
+    ignore_errors: true
 
-  - name: Verify Kibana's URL
-    assert:
-      that: uri_connect.status == 200
-      msg: URL status is {{ uri_connect.status }}
+#  - name: Verify Kibana's URL
+#    assert:
+#      that: uri_connect.status == 200
+#      msg: URL status is {{ uri_connect.status }}
 
 
   - name: Find Kibana's log file
